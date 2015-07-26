@@ -3,6 +3,12 @@ using SmartStore.Core.Configuration;
 
 namespace SmartStore.Core.Domain.Catalog
 {
+	public enum SubCategoryDisplayType
+	{
+		Hide = 0,
+		AboveProductList = 5,
+		Bottom = 10
+	}
 
     public class CatalogSettings : ISettings
     {
@@ -26,11 +32,14 @@ namespace SmartStore.Core.Domain.Catalog
 			CompareProductsEnabled = true;
             FilterEnabled = true;
             MaxFilterItemsToDisplay = 4;
-            ShowSubcategoriesAboveProductLists = true;
+			SubCategoryDisplayType = SubCategoryDisplayType.AboveProductList;
 			ProductSearchAutoCompleteEnabled = true;
+			ShowProductImagesInSearchAutoComplete = true;
 			ProductSearchAutoCompleteNumberOfProducts = 10;
 			ProductSearchTermMinimumLength = 3;
 			NumberOfBestsellersOnHomepage = 6;
+            ShowManufacturersOnHomepage = true;
+            ShowManufacturerPictures = false;
 			SearchPageProductsPerPage = 6;
 			ProductsAlsoPurchasedEnabled = true;
 			ProductsAlsoPurchasedNumber = 6;
@@ -53,6 +62,7 @@ namespace SmartStore.Core.Domain.Catalog
             ShowProductReviewsInProductDetail = true;
 			HtmlTextCollapsedHeight = 260;
 			MostRecentlyUsedCategoriesMaxSize = 6;
+			MostRecentlyUsedManufacturersMaxSize = 4;
         }
 
         /// <summary>
@@ -160,10 +170,10 @@ namespace SmartStore.Core.Domain.Catalog
         /// </summary>
         public bool ExpandAllFilterCriteria { get; set; }
         
-        /// <summary>
-        /// Gets or sets a value indicating whether sub categories above product lists are enabled
-        /// </summary>
-        public bool ShowSubcategoriesAboveProductLists { get; set; }
+		/// <summary>
+		/// Gets or sets a value indicating whether and where to display a list of subcategories
+		/// </summary>
+		public SubCategoryDisplayType SubCategoryDisplayType { get; set; }
         
         /// <summary>
         /// Gets or sets a value indicating whether a 'Share button' is enabled
@@ -274,6 +284,16 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets a number of bestsellers on home page
         /// </summary>
         public int NumberOfBestsellersOnHomepage { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to show manufacturers on home page
+        /// </summary>
+        public bool ShowManufacturersOnHomepage { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to show manufacturer pictures or names on home page
+        /// </summary>
+        public bool ShowManufacturerPictures { get; set; }
 
         /// <summary>
         /// Gets or sets a number of products per page on search products page
@@ -431,5 +451,10 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Gets or sets how many items to display maximally in the most recently used category list
 		/// </summary>
 		public int MostRecentlyUsedCategoriesMaxSize { get; set; }
+
+		/// <summary>
+		/// Gets or sets how many items to display maximally in the most recently used manufacturer list
+		/// </summary>
+		public int MostRecentlyUsedManufacturersMaxSize { get; set; }
     }
 }

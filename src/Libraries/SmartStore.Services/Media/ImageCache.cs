@@ -76,18 +76,23 @@ namespace SmartStore.Services.Media
 
         public virtual string GetImageUrl(string imagePath, string storeLocation = null)
         {
-            if (imagePath.IsEmpty())
+			if (imagePath.IsEmpty())
                 return null;
 
-			var cdnUrl = _storeContext.CurrentStore.ContentDeliveryNetwork;
-			if (cdnUrl.HasValue() && !_httpContext.IsDebuggingEnabled && !_httpContext.Request.IsLocal)
+			var root = storeLocation;
+
+			if (root.IsEmpty())
 			{
-				storeLocation = cdnUrl;
+				var cdnUrl = _storeContext.CurrentStore.ContentDeliveryNetwork;
+				if (cdnUrl.HasValue() && !_httpContext.IsDebuggingEnabled && !_httpContext.Request.IsLocal)
+				{
+					root = cdnUrl;
+				}
 			}
 
-			storeLocation = storeLocation.NullEmpty() ?? _webHelper.GetStoreLocation();
-            storeLocation = storeLocation.TrimEnd('/', '\\');
-            var url = storeLocation + "/Media/Thumbs/";
+			root = root.NullEmpty() ?? _httpContext.Request.ApplicationPath;
+			root = root.TrimEnd('/', '\\');
+			var url = root + "/Media/Thumbs/";
 
             url = url + imagePath;
             return url;
@@ -112,7 +117,7 @@ namespace SmartStore.Services.Media
                 {
                     foreach (var file in _cacheRootDir.GetFiles())
                     {
-						if (!file.Name.IsCaseInsensitiveEqual("placeholder"))
+						if (!file.Name.IsCaseInsensitiveEqual("placeholder") && !file.Name.IsCaseInsensitiveEqual("placeholder.txt"))
 						{
 							file.Delete();
 						}
@@ -132,11 +137,14 @@ namespace SmartStore.Services.Media
         public void CacheStatistics(out long fileCount, out long totalSize)
         {
             var allFiles = _cacheRootDir.GetFiles("*.*", SearchOption.AllDirectories);
-            fileCount = allFiles.Count();
+			var allImageFiles = allFiles.Where(x => !x.Name.IsCaseInsensitiveEqual("placeholder") && !x.Name.IsCaseInsensitiveEqual("placeholder.txt"));
+
+			fileCount = allImageFiles.Count();
+
             if (fileCount == 0)
                 totalSize = 0;
             else
-                totalSize = allFiles.Sum(x => x.Length);
+				totalSize = allImageFiles.Sum(x => x.Length);
         }
 
         #region Utils

@@ -28,6 +28,7 @@
         </td>
         <td class="adminData">
             @Html.DisplayFor(model => model.AppVersion)
+			<a href='@Url.Action("CheckUpdate", new { enforce = true })' style="margin-left: 10px">@T("Admin.CheckUpdate")</a>
         </td>
     </tr>
     <tr>
@@ -108,6 +109,10 @@
         </td>
         <td class="adminData">
 			@Model.DatabaseSizeString.NaIfEmpty()
+			@if (Model.ShrinkDatabaseEnabled)
+			{
+				<a href='@Url.Action("ShrinkDatabase")' style="margin-left: 10px">@T("Common.Shrink")</a>
+			}		
         </td>
     </tr>
     <tr>

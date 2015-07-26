@@ -13,7 +13,10 @@
     	toggleRenderAsWidget();
 
     	$("#@Html.FieldIdFor(model => model.WidgetWrapContent)").on('click', toggleWidgetWrapContent);
-    	toggleWidgetWrapContent();
+        toggleWidgetWrapContent();
+
+        $("#@Html.FieldIdFor(model => model.WidgetShowTitle)").on('click', toggleTitleTag);
+        toggleTitleTag();
     });
 
     function togglePassword() {
@@ -48,6 +51,15 @@
 			$('#pnlWidgetBordered').hide();
 		}
 	}
+
+    function toggleTitleTag() {
+        if ($('#@Html.FieldIdFor(model => model.WidgetShowTitle)').is(':checked')) {
+            $('#pnlTitleTag').show();
+        }
+        else {
+            $('#pnlTitleTag').hide();
+        }
+    }
 
 </script>
 @Html.HiddenFor(model => model.Id)
@@ -158,6 +170,15 @@
             <td class="adminData">
                 @Html.EditorFor(x => x.WidgetShowTitle)
                 @Html.ValidationMessageFor(model => model.WidgetShowTitle)
+            </td>
+        </tr>
+        <tr id="pnlTitleTag">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.TitleTag)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.TitleTag, Model.AvailableTitleTags, new { @class = "autowidth", data_select_min_results_for_search = 100 })
+                @Html.ValidationMessageFor(model => model.TitleTag)
             </td>
         </tr>
         <tr id="pnlWidgetBordered">

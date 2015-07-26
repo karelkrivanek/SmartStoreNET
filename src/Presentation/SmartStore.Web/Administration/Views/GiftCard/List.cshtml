@@ -72,11 +72,12 @@
                                 .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
                                 .Width(50)
                                 .Centered()
-                                .HeaderTemplate(T("Admin.Common.Edit").Text)
+                                .HeaderTemplate("<span class=\"t-link\">{0}</span>".FormatWith(T("Admin.Common.Edit").Text))
                                 .Filterable(false);
                         })
                         .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
                         .DataBinding(dataBinding => dataBinding.Ajax().Select("GiftCardList", "GiftCard", Model))
+						.PreserveGridState()
                         .EnableCustomBinding(true))
             </td>
         </tr>

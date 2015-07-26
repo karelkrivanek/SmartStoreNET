@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using Autofac;
 using SmartStore.Core;
 using SmartStore.Core.Async;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Stores;
@@ -22,6 +23,7 @@ using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
 using SmartStore.Services.Tasks;
 using SmartStore.Services.Tax;
+using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.Plugins
 {
@@ -243,9 +245,12 @@ namespace SmartStore.Web.Framework.Plugins
 			return "";
 		}
 
-		public string GetShippingCost(Product product, decimal? shippingCost = null)
+		public string GetShippingCost(Product product, decimal productPrice, decimal? shippingCost = null)
 		{
 			if (product.IsFreeShipping)
+				return "0";
+
+			if (BaseSettings.FreeShippingThreshold.HasValue && productPrice >= BaseSettings.FreeShippingThreshold.Value)
 				return "0";
 
 			decimal cost = shippingCost ?? BaseSettings.ShippingCost;
@@ -263,7 +268,7 @@ namespace SmartStore.Web.Framework.Plugins
 
 		public decimal GetProductPrice(Product product, Currency currency)
 		{
-			decimal priceBase = PriceCalculationService.GetFinalPrice(product, null, WorkContext.CurrentCustomer, decimal.Zero, true, 1);
+			decimal priceBase = PriceCalculationService.GetPreselectedPrice(product);
 
 			if (BaseSettings.ConvertNetToGrossPrices)
 			{
@@ -298,7 +303,7 @@ namespace SmartStore.Web.Framework.Plugins
 			if (store == null)
 				return null;
 
-			string dirTemp = AppPath.TempDir();
+			string dirTemp = FileSystemHelper.TempDir();
 			string ext = extension ?? BaseSettings.ExportFormat;
 			string dir = Path.Combine(HttpRuntime.AppDomainAppPath, "Content\\files\\exportimport");
 			string fileName = "{0}_{1}".FormatWith(store.Id, BaseSettings.StaticFileName);
@@ -315,7 +320,7 @@ namespace SmartStore.Web.Framework.Plugins
 			if (!Directory.Exists(dir))
 				Directory.CreateDirectory(dir);
 
-			var feedFile = new FeedFileData()
+			var feedFile = new FeedFileData
 			{
 				StoreId = store.Id,
 				StoreName = store.Name,
@@ -363,62 +368,65 @@ namespace SmartStore.Web.Framework.Plugins
 		{
 			try
 			{
-				_cachedPathes = null;
-				_cachedCategories = null;
-
-				var storeService = _ctx.Resolve<IStoreService>();
-				var stores = new List<Store>();
-
-				if (BaseSettings.StoreId != 0)
+				using (var scope = new DbContextScope(autoDetectChanges: false, validateOnSave: false, forceNoTracking: true))
 				{
-					var storeById = storeService.GetStoreById(BaseSettings.StoreId);
-					if (storeById != null)
-						stores.Add(storeById);
-				}
+					_cachedPathes = null;
+					_cachedCategories = null;
 
-				if (stores.Count == 0)
-				{
-					stores.AddRange(storeService.GetAllStores());
-				}
+					var storeService = _ctx.Resolve<IStoreService>();
+					var stores = new List<Store>();
 
-				var context = new FeedFileCreationContext()
-				{
-					StoreCount = stores.Count,
-					Progress = new Progress<FeedFileCreationProgress>(x =>
+					if (BaseSettings.StoreId != 0)
 					{
-						AsyncState.Current.Set(x, SystemName);
-					})
-				};
+						var storeById = storeService.GetStoreById(BaseSettings.StoreId);
+						if (storeById != null)
+							stores.Add(storeById);
+					}
 
-				foreach (var store in stores)
-				{
-					var feedFile = GetFeedFileByStore(store, secondFileName);
-					if (feedFile != null)
+					if (stores.Count == 0)
 					{
-						AppPath.Delete(feedFile.FileTempPath);
+						stores.AddRange(storeService.GetAllStores());
+					}
 
-						if (secondFileName.HasValue())
-							AppPath.Delete(feedFile.CustomProperties["SecondFileTempPath"] as string);
-
-						using (var stream = new FileStream(feedFile.FileTempPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
-						using (var logger = new TraceLogger(feedFile.LogPath))
+					var context = new FeedFileCreationContext()
+					{
+						StoreCount = stores.Count,
+						Progress = new Progress<FeedFileCreationProgress>(x =>
 						{
-							context.Stream = stream;
-							context.Logger = logger;
-							context.Store = store;
-							context.FeedFileUrl = feedFile.FileUrl;
+							AsyncState.Current.Set(x, SystemName);
+						})
+					};
+
+					foreach (var store in stores)
+					{
+						var feedFile = GetFeedFileByStore(store, secondFileName);
+						if (feedFile != null)
+						{
+							FileSystemHelper.Delete(feedFile.FileTempPath);
 
 							if (secondFileName.HasValue())
-								context.SecondFilePath = feedFile.CustomProperties["SecondFileTempPath"] as string;
+								FileSystemHelper.Delete(feedFile.CustomProperties["SecondFileTempPath"] as string);
 
-							if (!createFeed(context))
-								break;
+							using (var stream = new FileStream(feedFile.FileTempPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
+							using (var logger = new TraceLogger(feedFile.LogPath))
+							{
+								context.Stream = stream;
+								context.Logger = logger;
+								context.Store = store;
+								context.FeedFileUrl = feedFile.FileUrl;
+
+								if (secondFileName.HasValue())
+									context.SecondFilePath = feedFile.CustomProperties["SecondFileTempPath"] as string;
+
+								if (!createFeed(context))
+									break;
+							}
+
+							FileSystemHelper.Copy(feedFile.FileTempPath, feedFile.FilePath);
+
+							if (secondFileName.HasValue())
+								FileSystemHelper.Copy(context.SecondFilePath, feedFile.CustomProperties["SecondFilePath"] as string);
 						}
-
-						AppPath.Copy(feedFile.FileTempPath, feedFile.FilePath);
-
-						if (secondFileName.HasValue())
-							AppPath.Copy(context.SecondFilePath, feedFile.CustomProperties["SecondFilePath"] as string);
 					}
 				}
 			}
@@ -447,14 +455,14 @@ namespace SmartStore.Web.Framework.Plugins
 						var feedFile = GetFeedFileByStore(store, secondFileName, ext);
 						if (feedFile != null)
 						{
-							AppPath.Delete(feedFile.FileTempPath);
-							AppPath.Delete(feedFile.FilePath);
-							AppPath.Delete(feedFile.LogPath);
+							FileSystemHelper.Delete(feedFile.FileTempPath);
+							FileSystemHelper.Delete(feedFile.FilePath);
+							FileSystemHelper.Delete(feedFile.LogPath);
 
 							if (secondFileName.HasValue())
 							{
-								AppPath.Delete(feedFile.CustomProperties["SecondFilePath"] as string);
-								AppPath.Delete(feedFile.CustomProperties["SecondFileTempPath"] as string);
+								FileSystemHelper.Delete(feedFile.CustomProperties["SecondFilePath"] as string);
+								FileSystemHelper.Delete(feedFile.CustomProperties["SecondFileTempPath"] as string);
 							}
 						}
 					}
@@ -472,7 +480,7 @@ namespace SmartStore.Web.Framework.Plugins
 			var pictureService = PictureService;
 			var picture = product.GetDefaultProductPicture(pictureService);
 
-			//always use HTTP when getting image URL
+			// always use HTTP when getting image URL
 			if (picture != null)
 				url = pictureService.GetPictureUrl(picture, BaseSettings.ProductPictureSize, storeLocation: store.Url);
 			else
@@ -596,8 +604,9 @@ namespace SmartStore.Web.Framework.Plugins
 
 			string scheduleTaskType = ScheduleTaskType;
 
-			var task = AsyncRunner.Run(container =>
+			var task = AsyncRunner.Run((container, ct) =>
 			{
+				int taskId = 0;
 				try
 				{
 					var svc = container.Resolve<IScheduleTaskService>();
@@ -607,19 +616,15 @@ namespace SmartStore.Web.Framework.Plugins
 					if (scheduleTask == null)
 						throw new Exception("Schedule task cannot be loaded");
 
+					taskId = scheduleTask.Id;
+
 					var job = new Job(scheduleTask);
 					job.Enabled = true;
-					job.Execute(container, false);
+					job.Execute(ct, container, false);
 				}
-				catch (Exception exc)
+				catch (Exception)
 				{
-					exc.Dump();
-
-					try
-					{
-						_scheduleTaskService.EnsureTaskIsNotRunning(scheduleTaskType);
-					}
-					catch (Exception) { }
+					_scheduleTaskService.EnsureTaskIsNotRunning(taskId);
 				}
 			}, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
 

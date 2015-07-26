@@ -80,7 +80,7 @@ namespace SmartStore.Data
 			if (hooksEnabled)
 			{
 				modifiedHookEntries = modifiedEntries
-								.Select(x => new HookedEntityEntry()
+								.Select(x => new HookedEntityEntry
 								{
 									Entity = x.Entity,
 									PreSaveState = (SmartStore.Core.Data.EntityState)((int)x.State)
@@ -425,6 +425,17 @@ namespace SmartStore.Data
 
 		public bool ForceNoTracking { get; set; }
 
+		public ITransaction BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.Unspecified)
+		{
+			var dbContextTransaction = this.Database.BeginTransaction(isolationLevel);
+			return new DbContextTransactionWrapper(dbContextTransaction);
+		}
+
+		public void UseTransaction(DbTransaction transaction)
+		{
+			this.Database.UseTransaction(transaction);
+		}
+
         #endregion
 
         #region Utils
@@ -569,9 +580,10 @@ namespace SmartStore.Data
 				foreach (var entry in entries)
 				{
 					var entityWithPossibleMergedData = entry.Entity as IMergedData;
-
 					if (entityWithPossibleMergedData != null)
+					{
 						entityWithPossibleMergedData.MergedDataIgnore = ignore;
+					}
 				}
 			}
 			catch { }
@@ -642,5 +654,35 @@ namespace SmartStore.Data
 
 		#endregion
 
-    }
+		#region Nested classes
+
+		private class DbContextTransactionWrapper : ITransaction
+		{
+			private readonly DbContextTransaction _tx;
+
+			public DbContextTransactionWrapper(DbContextTransaction tx)
+			{
+				Guard.ArgumentNotNull(() => tx);
+
+				_tx = tx;
+			}
+			
+			public void Commit()
+			{
+				_tx.Commit();
+			}
+
+			public void Rollback()
+			{
+				_tx.Rollback();
+			}
+
+			public void Dispose()
+			{
+				_tx.Dispose();
+			}
+		}
+
+		#endregion
+	}
 }

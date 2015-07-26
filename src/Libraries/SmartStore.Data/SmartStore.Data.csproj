@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SmartStore.Data</RootNamespace>
     <AssemblyName>SmartStore.Data</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>
     </SccProjectName>
@@ -216,13 +216,65 @@
     <Compile Include="Migrations\201501221417371_DefaultViewModeForCategories.Designer.cs">
       <DependentUpon>201501221417371_DefaultViewModeForCategories.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201501291135374_QuantityUnits.cs" />
-    <Compile Include="Migrations\201501291135374_QuantityUnits.Designer.cs">
-      <DependentUpon>201501291135374_QuantityUnits.cs</DependentUpon>
+    <Compile Include="Migrations\201502191643156_QtyUnitsAndOrderItemTaxRate.cs" />
+    <Compile Include="Migrations\201502191643156_QtyUnitsAndOrderItemTaxRate.Designer.cs">
+      <DependentUpon>201502191643156_QtyUnitsAndOrderItemTaxRate.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201501291549546_OrderItemTaxRate.cs" />
-    <Compile Include="Migrations\201501291549546_OrderItemTaxRate.Designer.cs">
-      <DependentUpon>201501291549546_OrderItemTaxRate.cs</DependentUpon>
+    <Compile Include="Migrations\201502202248081_NewIndexesV22.cs" />
+    <Compile Include="Migrations\201502202248081_NewIndexesV22.Designer.cs">
+      <DependentUpon>201502202248081_NewIndexesV22.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201502280342294_LocalizedPropertyIndex.cs" />
+    <Compile Include="Migrations\201502280342294_LocalizedPropertyIndex.Designer.cs">
+      <DependentUpon>201502280342294_LocalizedPropertyIndex.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201503032227054_V22Res.cs" />
+    <Compile Include="Migrations\201503032227054_V22Res.Designer.cs">
+      <DependentUpon>201503032227054_V22Res.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201503101851123_PdfConverterUser.cs" />
+    <Compile Include="Migrations\201503101851123_PdfConverterUser.Designer.cs">
+      <DependentUpon>201503101851123_PdfConverterUser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201502120858030_Licensing.cs" />
+    <Compile Include="Migrations\201502120858030_Licensing.Designer.cs">
+      <DependentUpon>201502120858030_Licensing.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201504131412183_NewCategoryProperties.cs" />
+    <Compile Include="Migrations\201504131412183_NewCategoryProperties.Designer.cs">
+      <DependentUpon>201504131412183_NewCategoryProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201504171629262_V22Final.cs" />
+    <Compile Include="Migrations\201504171629262_V22Final.Designer.cs">
+      <DependentUpon>201504171629262_V22Final.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201504232202590_AutoUpdateRes.cs" />
+    <Compile Include="Migrations\201504232202590_AutoUpdateRes.Designer.cs">
+      <DependentUpon>201504232202590_AutoUpdateRes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201504270946381_TempFileCleanupTask.cs" />
+    <Compile Include="Migrations\201504270946381_TempFileCleanupTask.Designer.cs">
+      <DependentUpon>201504270946381_TempFileCleanupTask.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201504290937512_SendEmailsManually.cs" />
+    <Compile Include="Migrations\201504290937512_SendEmailsManually.Designer.cs">
+      <DependentUpon>201504290937512_SendEmailsManually.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201505052021483_PdfConverterRoleFix.cs" />
+    <Compile Include="Migrations\201505052021483_PdfConverterRoleFix.Designer.cs">
+      <DependentUpon>201505052021483_PdfConverterRoleFix.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201505061813010_CountryMultistore.cs" />
+    <Compile Include="Migrations\201505061813010_CountryMultistore.Designer.cs">
+      <DependentUpon>201505061813010_CountryMultistore.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201505272236124_V222.cs" />
+    <Compile Include="Migrations\201505272236124_V222.Designer.cs">
+      <DependentUpon>201505272236124_V222.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201506181858349_AclRecordCustomerRole.cs" />
+    <Compile Include="Migrations\201506181858349_AclRecordCustomerRole.Designer.cs">
+      <DependentUpon>201506181858349_AclRecordCustomerRole.cs</DependentUpon>
     </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
@@ -269,7 +321,6 @@
     <Compile Include="Mapping\Shipping\ShipmentItemMap.cs" />
     <Compile Include="Mapping\Tasks\ScheduleTaskMap.cs" />
     <Compile Include="Setup\Builder\BuilderDbContextExtensions.cs" />
-    <Compile Include="Setup\TestDatabaseInitializer.cs" />
     <Compile Include="SmartDbConfiguration.cs" />
     <Compile Include="SqlServerDataProvider.cs" />
     <Compile Include="SqlCeDataProvider.cs" />
@@ -440,11 +491,50 @@
     <EmbeddedResource Include="Migrations\201501221417371_DefaultViewModeForCategories.resx">
       <DependentUpon>201501221417371_DefaultViewModeForCategories.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201501291549546_OrderItemTaxRate.resx">
-      <DependentUpon>201501291549546_OrderItemTaxRate.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201502191643156_QtyUnitsAndOrderItemTaxRate.resx">
+      <DependentUpon>201502191643156_QtyUnitsAndOrderItemTaxRate.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201501291135374_QuantityUnits.resx">
-      <DependentUpon>201501291135374_QuantityUnits.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201502202248081_NewIndexesV22.resx">
+      <DependentUpon>201502202248081_NewIndexesV22.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502280342294_LocalizedPropertyIndex.resx">
+      <DependentUpon>201502280342294_LocalizedPropertyIndex.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503032227054_V22Res.resx">
+      <DependentUpon>201503032227054_V22Res.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503101851123_PdfConverterUser.resx">
+      <DependentUpon>201503101851123_PdfConverterUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502120858030_Licensing.resx">
+      <DependentUpon>201502120858030_Licensing.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201504131412183_NewCategoryProperties.resx">
+      <DependentUpon>201504131412183_NewCategoryProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201504171629262_V22Final.resx">
+      <DependentUpon>201504171629262_V22Final.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201504232202590_AutoUpdateRes.resx">
+      <DependentUpon>201504232202590_AutoUpdateRes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201504270946381_TempFileCleanupTask.resx">
+      <DependentUpon>201504270946381_TempFileCleanupTask.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201504290937512_SendEmailsManually.resx">
+      <DependentUpon>201504290937512_SendEmailsManually.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201505052021483_PdfConverterRoleFix.resx">
+      <DependentUpon>201505052021483_PdfConverterRoleFix.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201505061813010_CountryMultistore.resx">
+      <DependentUpon>201505061813010_CountryMultistore.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201505272236124_V222.resx">
+      <DependentUpon>201505272236124_V222.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201506181858349_AclRecordCustomerRole.resx">
+      <DependentUpon>201506181858349_AclRecordCustomerRole.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />
@@ -460,6 +550,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Sql\StoredProcedures.Inverse.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Sql\LatestProductLoadAllPaged.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

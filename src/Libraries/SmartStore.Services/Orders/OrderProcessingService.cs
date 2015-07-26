@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using SmartStore.Core;
-using SmartStore.Core.Html;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
@@ -16,22 +15,21 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
+using SmartStore.Core.Events;
+using SmartStore.Core.Logging;
+using SmartStore.Core.Plugins;
 using SmartStore.Services.Affiliates;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Discounts;
-using SmartStore.Core.Events;
 using SmartStore.Services.Localization;
-using SmartStore.Core.Logging;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Security;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Tax;
-using SmartStore.Services.Seo;
-using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Orders
 {
@@ -810,12 +808,9 @@ namespace SmartStore.Services.Orders
 
 				if (!preProcessPaymentResult.Success)
 				{
-					foreach (var paymentError in preProcessPaymentResult.Errors)
-					{
-						result.AddError(string.Format("Payment error: {0}", paymentError));
-					}
-
-					throw new SmartException("Error while pre-processing the payment");
+					result.Errors.AddRange(preProcessPaymentResult.Errors);
+					result.Errors.Add(T("Common.Error.PreProcessPayment"));
+					return result;					
 				}
 
 				Address billingAddress = null;
@@ -1428,23 +1423,10 @@ namespace SmartStore.Services.Orders
                 result.AddError(exc.Message);
             }
 
-            #region Process errors
-
-            string error = "";
-            for (int i = 0; i < result.Errors.Count; i++)
-            {
-                error += string.Format("Error {0}: {1}", i + 1, result.Errors[i]);
-                if (i != result.Errors.Count - 1)
-                    error += ". ";
-            }
-            if (!String.IsNullOrEmpty(error))
-            {
-                //log it
-                string logError = string.Format("Error while placing order. {0}", error);
-                _logger.Error(logError);
-            }
-
-            #endregion
+			if (result.Errors.Count > 0)
+			{
+				_logger.Error(string.Join(" ", result.Errors));
+			}
 
             return result;
         }
@@ -2655,28 +2637,28 @@ namespace SmartStore.Services.Orders
             if (order == null)
                 throw new ArgumentNullException("order");
 
-			int parentItemId, childItemId;
-
             foreach (var orderItem in order.OrderItems)
             {
 				bool isBundle = (orderItem.Product.ProductType == ProductType.BundledProduct);
 
-                var warnings =_shoppingCartService.AddToCart(orderItem.Order.Customer, orderItem.Product, ShoppingCartType.ShoppingCart, orderItem.Order.StoreId,
-					orderItem.AttributesXml, isBundle ? decimal.Zero : orderItem.UnitPriceExclTax, orderItem.Quantity, false, out parentItemId);
+				var addToCartContext = new AddToCartContext();
 
-				if (isBundle && orderItem.BundleData.HasValue() && warnings.Count <= 0)
+				addToCartContext.Warnings = _shoppingCartService.AddToCart(order.Customer, orderItem.Product, ShoppingCartType.ShoppingCart, order.StoreId,
+					orderItem.AttributesXml, isBundle ? decimal.Zero : orderItem.UnitPriceExclTax, orderItem.Quantity, false, addToCartContext);
+
+				if (isBundle && orderItem.BundleData.HasValue() && addToCartContext.Warnings.Count == 0)
 				{
 					foreach (var bundleData in orderItem.GetBundleData())
 					{
 						var bundleItem = _productService.GetBundleItemById(bundleData.BundleItemId);
+						addToCartContext.BundleItem = bundleItem;
 
-						warnings =_shoppingCartService.AddToCart(orderItem.Order.Customer, bundleItem.Product, ShoppingCartType.ShoppingCart,
-							orderItem.Order.StoreId, bundleData.AttributesXml, decimal.Zero, bundleData.Quantity, false, out childItemId, parentItemId, bundleItem);
-
-						if (warnings.Count > 0)
-							_shoppingCartService.DeleteShoppingCartItem(parentItemId);
+						addToCartContext.Warnings = _shoppingCartService.AddToCart(order.Customer, bundleItem.Product, ShoppingCartType.ShoppingCart, order.StoreId,
+							bundleData.AttributesXml, decimal.Zero, bundleData.Quantity, false, addToCartContext);
 					}
 				}
+
+				_shoppingCartService.AddToCartStoring(addToCartContext);
             }
         }
         

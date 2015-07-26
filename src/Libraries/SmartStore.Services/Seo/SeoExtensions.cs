@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Seo;
@@ -78,32 +75,6 @@ namespace SmartStore.Services.Seo
         #endregion
 
         #region Forum
-
-        /// <summary>
-        /// Gets ForumGroup SE (search engine) name
-        /// </summary>
-        /// <param name="forumGroup">ForumGroup</param>
-        /// <returns>ForumGroup SE (search engine) name</returns>
-        public static string GetSeName(this ForumGroup forumGroup)
-        {
-            if (forumGroup == null)
-                throw new ArgumentNullException("forumGroup");
-            string seName = GetSeName(forumGroup.Name);
-            return seName;
-        }
-
-        /// <summary>
-        /// Gets Forum SE (search engine) name
-        /// </summary>
-        /// <param name="forum">Forum</param>
-        /// <returns>Forum SE (search engine) name</returns>
-        public static string GetSeName(this Forum forum)
-        {
-            if (forum == null)
-                throw new ArgumentNullException("forum");
-            string seName = GetSeName(forum.Name);
-            return seName;
-        }
 
         /// <summary>
         /// Gets ForumTopic SE (search engine) name
@@ -189,20 +160,20 @@ namespace SmartStore.Services.Seo
 
 			if (languageId > 0)
 			{
-				//ensure that we have at least two published languages
+				// ensure that we have at least two published languages
 				bool loadLocalizedValue = true;
 				if (ensureTwoPublishedLanguages)
 				{
 					var totalPublishedLanguages = languageService.GetLanguagesCount(false);
 					loadLocalizedValue = totalPublishedLanguages >= 2;
 				}
-				//localized value
+				// localized value
 				if (loadLocalizedValue)
 				{
 					result = urlRecordService.GetActiveSlug(entity.Id, entityName, languageId);
 				}
 			}
-			//set default value if required
+			// set default value if required
 			if (String.IsNullOrEmpty(result) && returnDefaultValue)
 			{
 				result = urlRecordService.GetActiveSlug(entity.Id, entityName, 0);
@@ -247,31 +218,31 @@ namespace SmartStore.Services.Seo
 			if (entity == null)
 				throw new ArgumentNullException("entity");
 
-			//use name if sename is not specified
+			// use name if sename is not specified
 			if (String.IsNullOrWhiteSpace(seName) && !String.IsNullOrWhiteSpace(name))
 				seName = name;
 
-			//validation
+			// validation
 			seName = GetSeName(seName, seoSettings);
 
-			//max length
+			// max length
 			seName = seName.Truncate(400);
 
 			if (String.IsNullOrWhiteSpace(seName))
 			{
 				if (ensureNotEmpty)
 				{
-					//use entity identifier as sename if empty
+					// use entity identifier as sename if empty
 					seName = entity.Id.ToString();
 				}
 				else
 				{
-					//return. no need for further processing
+					// return. no need for further processing
 					return seName;
 				}
 			}
 
-			//ensure this sename is not reserved yet
+			// ensure this sename is not reserved yet
 			string entityName = typeof(T).Name;
 			int i = 2;
 			var tempSeName = seName;
@@ -280,14 +251,14 @@ namespace SmartStore.Services.Seo
 
 			while (true)
 			{
-				//check whether such slug already exists (and that is not the current product)
+				// check whether such slug already exists (and that it's not the current entity)
 				var urlRecord = urlRecordService.GetBySlug(tempSeName) ?? extraSlugLookup(tempSeName);
 				var reserved1 = urlRecord != null && !(urlRecord.EntityId == entity.Id && urlRecord.EntityName.Equals(entityName, StringComparison.InvariantCultureIgnoreCase));
 
-				if (!reserved1 && urlRecord != null && languageId.HasValue)	// codehint: sm-add
+				if (!reserved1 && urlRecord != null && languageId.HasValue)
 					reserved1 = (urlRecord.LanguageId != languageId.Value);
 
-				//and it's not in the list of reserved slugs
+				// and it's not in the list of reserved slugs
 				var reserved2 = seoSettings.ReservedUrlRecordSlugs.Contains(tempSeName, StringComparer.InvariantCultureIgnoreCase);
 				if (!reserved1 && !reserved2)
 					break;

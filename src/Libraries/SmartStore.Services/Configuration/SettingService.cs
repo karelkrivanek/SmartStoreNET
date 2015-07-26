@@ -151,7 +151,6 @@ namespace SmartStore.Services.Configuration
             _eventPublisher.EntityUpdated(setting);
         }
 
-		/// <remarks>codehint: sm-add</remarks>
 		private T LoadSettingsJson<T>(int storeId = 0)
 		{
 			Type t = typeof(T);
@@ -297,7 +296,6 @@ namespace SmartStore.Services.Configuration
 		/// <param name="storeId">Store identifier for which settigns should be loaded</param>
 		public virtual T LoadSetting<T>(int storeId = 0) where T : ISettings, new()
 		{
-			// codehint: sm-add
 			if (typeof(T).HasAttribute<JsonPersistAttribute>(true))
 			{
 				return LoadSettingsJson<T>(storeId);
@@ -467,7 +465,6 @@ namespace SmartStore.Services.Configuration
 			SetSetting(key, value ?? "", storeId, false);
 		}
 
-		/// <remarks>codehint: sm-add</remarks>
 		public virtual void UpdateSetting<T, TPropType>(T settings, Expression<Func<T, TPropType>> keySelector, bool overrideForStore, int storeId = 0)  where T : ISettings, new()
 		{
 			if (overrideForStore || storeId == 0)
@@ -569,15 +566,15 @@ namespace SmartStore.Services.Configuration
 		/// <summary>
 		/// Deletes all settings with its key beginning with rootKey.
 		/// </summary>
-		/// <remarks>codehint: sm-add</remarks>
 		/// <returns>Number of deleted settings</returns>
 		public virtual int DeleteSettings(string rootKey) {
 			int result = 0;
+
 			if (rootKey.HasValue())
 			{
 				try
 				{
-					string sqlDelete = "Delete From Setting Where Name Like '{0}%'".FormatWith(rootKey.EndsWith(".") ? rootKey : rootKey + ".");
+					string sqlDelete = "DELETE FROM [Setting] WHERE [Name] LIKE '{0}%'".FormatWith(rootKey.EndsWith(".") ? rootKey : rootKey + ".");
 					result = _settingRepository.Context.ExecuteSqlCommand(sqlDelete);
 
                     // cache
@@ -588,6 +585,7 @@ namespace SmartStore.Services.Configuration
 					exc.Dump();
 				}
 			}
+
 			return result;
 		}
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Web.Framework;
 
 namespace SmartStore.Admin.Models.Settings
@@ -62,6 +63,15 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowDefaultQuantityUnit")]
         public bool ShowDefaultQuantityUnit { get; set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowManufacturersOnHomepage")]
+        public bool ShowManufacturersOnHomepage { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ManufacturersBlockItemsToDisplay")]
+        public int ManufacturersBlockItemsToDisplay { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowManufacturerPictures")]
+        public bool ShowManufacturerPictures { get; set; }
+
         #endregion
 
         #region Product lists
@@ -93,8 +103,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ExpandAllFilterCriteria")]
         public bool ExpandAllFilterCriteria { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowSubcategoriesAboveProductLists")]
-        public bool ShowSubcategoriesAboveProductLists { get; set; }
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.SubCategoryDisplayType")]
+		public SubCategoryDisplayType SubCategoryDisplayType { get; set; }
+		public SelectList AvailableSubCategoryDisplayTypes { get; set; }
 
         #endregion 
 
@@ -243,6 +254,9 @@ namespace SmartStore.Admin.Models.Settings
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ProductSearchAutoCompleteEnabled")]
         public bool ProductSearchAutoCompleteEnabled { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowProductImagesInSearchAutoComplete")]
+		public bool ShowProductImagesInSearchAutoComplete { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ProductSearchAutoCompleteNumberOfProducts")]
         public int ProductSearchAutoCompleteNumberOfProducts { get; set; }

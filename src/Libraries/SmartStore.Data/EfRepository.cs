@@ -48,6 +48,14 @@ namespace SmartStore.Data
             }
         }
 
+		public virtual ICollection<T> Local
+		{
+			get
+			{
+				return this.Entities.Local;
+			}
+		}
+
         public T Create()
         {
             return this.Entities.Create();
@@ -64,7 +72,7 @@ namespace SmartStore.Data
                 throw new ArgumentNullException("entity");
 
             this.Entities.Add(entity);
-
+			
             if (this.AutoCommitEnabled)
                 _context.SaveChanges();
         }
@@ -141,6 +149,36 @@ namespace SmartStore.Data
             }
         }
 
+		public void UpdateRange(IEnumerable<T> entities)
+		{
+			if (entities == null)
+				throw new ArgumentNullException("entities");
+
+			if (this.AutoCommitEnabled)
+			{
+				if (!InternalContext.Configuration.AutoDetectChangesEnabled)
+				{
+					entities.Each(entity =>
+					{
+						InternalContext.Entry(entity).State = System.Data.Entity.EntityState.Modified;
+					});
+				}
+				_context.SaveChanges();
+			}
+			else
+			{
+				try
+				{
+					entities.Each(entity =>
+					{
+						this.Entities.Attach(entity);
+						InternalContext.Entry(entity).State = System.Data.Entity.EntityState.Modified;				
+					});
+				}
+				finally { }
+			}
+		}
+
         public void Delete(T entity)
         {
             if (entity == null)
@@ -150,13 +188,25 @@ namespace SmartStore.Data
             {
                 this.Entities.Attach(entity);
             }
-
+			
             this.Entities.Remove(entity);
 
             if (this.AutoCommitEnabled)
                 _context.SaveChanges();
         }
 
+		public void DeleteRange(IEnumerable<T> entities)
+		{
+			if (entities == null)
+				throw new ArgumentNullException("entities");
+
+			this.Entities.RemoveRange(entities);
+
+			if (this.AutoCommitEnabled)
+				_context.SaveChanges();
+		}
+
+		[Obsolete("Use the extension method from 'SmartStore.Core, SmartStore.Core.Data' instead")]
         public IQueryable<T> Expand(IQueryable<T> query, string path)
         {
             Guard.ArgumentNotNull(query, "query");
@@ -165,6 +215,7 @@ namespace SmartStore.Data
             return query.Include(path);
         }
 
+		[Obsolete("Use the extension method from 'SmartStore.Core, SmartStore.Core.Data' instead")]
         public IQueryable<T> Expand<TProperty>(IQueryable<T> query, Expression<Func<T, TProperty>> path)
         {
             Guard.ArgumentNotNull(query, "query");

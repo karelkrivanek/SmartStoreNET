@@ -259,8 +259,6 @@ namespace SmartStore.Services.Messages
             if (!String.IsNullOrEmpty(order.CheckoutAttributeDescription))
             {
                 sb.AppendLine("<tr><td style=\"text-align:right;\" colspan=\"1\">&nbsp;</td><td colspan=\"3\" style=\"text-align:right\">");
-                //codehint: sm-edit
-                //sb.AppendLine(order.CheckoutAttributeDescription);
                 sb.AppendLine(HtmlUtils.ConvertPlainTextToTable(HtmlUtils.ConvertHtmlToPlainText(order.CheckoutAttributeDescription)));
                 sb.AppendLine("</td></tr>");
             }
@@ -524,7 +522,6 @@ namespace SmartStore.Services.Messages
             return result;
         }
 
-        //codehint: sm-add
         protected virtual string TopicToHtml(string systemName, int languageId)
         {
             var result = "";
@@ -557,7 +554,7 @@ namespace SmartStore.Services.Messages
             sb.AppendLine("<table border=\"0\" class=\"supplier-identification\">");
             sb.AppendLine("<tr valign=\"top\">");
 			
-            sb.AppendLine("<td class=\"smaller\" width=\"25%\">");
+            sb.AppendLine("<td class=\"smaller\" width=\"33%\">");
 
             sb.AppendLine(String.Format("{0} <br>", _companyInfoSettings.CompanyName ));
 
@@ -600,7 +597,7 @@ namespace SmartStore.Services.Messages
 
             sb.AppendLine("<td/>");
 
-            sb.AppendLine("<td class=\"smaller\" width=\"50%\">");
+            sb.AppendLine("<td class=\"smaller\" width=\"33%\">");
             
             if (!String.IsNullOrEmpty(_storeContext.CurrentStore.Url)) 
             {
@@ -621,7 +618,7 @@ namespace SmartStore.Services.Messages
 
             sb.AppendLine("<td/>");
 
-            sb.AppendLine("<td class=\"smaller\" width=\"25%\">");
+            sb.AppendLine("<td class=\"smaller\" width=\"34%\">");
 
             if (!String.IsNullOrEmpty(_bankConnectionSettings.Bankname)) 
             {
@@ -676,8 +673,6 @@ namespace SmartStore.Services.Messages
             tokens.Add(new Token("Store.Email", defaultEmailAccount.Email));
         }
 
-        //codehint: sm-add begin
-
         public virtual void AddCompanyTokens(IList<Token> tokens)
         {
             tokens.Add(new Token("Company.CompanyName", _companyInfoSettings.CompanyName));
@@ -719,8 +714,6 @@ namespace SmartStore.Services.Messages
             tokens.Add(new Token("Contact.SupportEmailAddress", _contactDataSettings.SupportEmailAddress));
             tokens.Add(new Token("Contact.ContactEmailAddress", _contactDataSettings.ContactEmailAddress));
         }
-
-        //codehint: sm-add end
 
         public virtual void AddOrderTokens(IList<Token> tokens, Order order, int languageId)
         {
@@ -971,12 +964,12 @@ namespace SmartStore.Services.Messages
             _eventPublisher.EntityTokensAdded(forumPost, tokens);
         }
 
-        public virtual void AddForumTokens(IList<Token> tokens, Forum forum)
+		public virtual void AddForumTokens(IList<Token> tokens, Forum forum, int languageId)
         {
             //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
-            var forumUrl = string.Format("{0}boards/forum/{1}/{2}", _webHelper.GetStoreLocation(false), forum.Id, forum.GetSeName());
+            var forumUrl = string.Format("{0}boards/forum/{1}/{2}", _webHelper.GetStoreLocation(false), forum.Id, forum.GetSeName(languageId));
             tokens.Add(new Token("Forums.ForumURL", forumUrl, true));
-            tokens.Add(new Token("Forums.ForumName", forum.Name));
+            tokens.Add(new Token("Forums.ForumName", forum.GetLocalized(x => x.Name, languageId)));
 
             //event notification
             _eventPublisher.EntityTokensAdded(forum, tokens);
@@ -1013,7 +1006,6 @@ namespace SmartStore.Services.Messages
                 "%NewsLetterSubscription.Email%",
                 "%NewsLetterSubscription.ActivationUrl%",
                 "%NewsLetterSubscription.DeactivationUrl%",
-                //codehint: sm-add
                 "%Store.SupplierIdentification%",
             };
             return allowedTokens.ToArray();

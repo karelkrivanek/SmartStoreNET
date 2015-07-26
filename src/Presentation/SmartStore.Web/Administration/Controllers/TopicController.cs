@@ -3,11 +3,13 @@ using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Topics;
 using SmartStore.Core.Domain.Topics;
+using SmartStore.Core.Events;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
 using SmartStore.Services.Topics;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Mvc;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
@@ -24,6 +26,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IPermissionService _permissionService;
 		private readonly IStoreService _storeService;
 		private readonly IStoreMappingService _storeMappingService;
+        private readonly IEventPublisher _eventPublisher;
 
         #endregion Fields
 
@@ -32,7 +35,7 @@ namespace SmartStore.Admin.Controllers
         public TopicController(ITopicService topicService, ILanguageService languageService,
             ILocalizedEntityService localizedEntityService, ILocalizationService localizationService,
 			IPermissionService permissionService, IStoreService storeService,
-			IStoreMappingService storeMappingService)
+            IStoreMappingService storeMappingService, IEventPublisher eventPublisher)
         {
             this._topicService = topicService;
             this._languageService = languageService;
@@ -41,6 +44,7 @@ namespace SmartStore.Admin.Controllers
             this._permissionService = permissionService;
 			this._storeService = storeService;
 			this._storeMappingService = storeMappingService;
+            this._eventPublisher = eventPublisher;
         }
 
         #endregion
@@ -117,10 +121,13 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
 			var model = new TopicListModel();
-			//stores
+
+			// stores
 			model.AvailableStores.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
 			foreach (var s in _storeService.GetAllStores())
+			{
 				model.AvailableStores.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString() });
+			}
 
 			return View(model);
         }
@@ -134,7 +141,12 @@ namespace SmartStore.Admin.Controllers
             var topics = _topicService.GetAllTopics(model.SearchStoreId);
             var gridModel = new GridModel<TopicModel>
             {
-				Data = topics.Select(x => x.ToModel()),
+				Data = topics.Select(x => { 
+					var item = x.ToModel();
+					// otherwise maxJsonLength could be exceeded
+					item.Body = "";
+					return item;
+				}),
                 Total = topics.Count
             };
             return new JsonResult
@@ -158,6 +170,9 @@ namespace SmartStore.Admin.Controllers
 			PrepareStoresMappingModel(model, null, false);
             //locales
             AddLocales(_languageService, model.Locales);
+
+            model.TitleTag = "h1";
+
             return View(model);
         }
 
@@ -218,7 +233,8 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
-        public ActionResult Edit(TopicModel model, bool continueEditing)
+        [ValidateInput(false)]
+        public ActionResult Edit(TopicModel model, bool continueEditing, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageTopics))
                 return AccessDeniedView();
@@ -244,7 +260,9 @@ namespace SmartStore.Admin.Controllers
                 
 				//locales
                 UpdateLocales(topic, model);
-                
+
+                _eventPublisher.Publish(new ModelBoundEvent(model, topic, form));
+
                 NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Topics.Updated"));
                 return continueEditing ? RedirectToAction("Edit", topic.Id) : RedirectToAction("List");
             }

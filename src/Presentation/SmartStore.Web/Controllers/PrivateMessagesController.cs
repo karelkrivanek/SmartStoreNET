@@ -102,7 +102,7 @@ namespace SmartStore.Web.Controllers
                     break;
             }
 
-            var model = new PrivateMessageIndexModel()
+            var model = new PrivateMessageIndexModel
             {
                 InboxPage = inboxPage,
                 SentItemsPage = sentItemsPage,
@@ -146,13 +146,11 @@ namespace SmartStore.Web.Controllers
                 });
             }
 
-            // codehint: sm-edit
             ViewData["PagerRouteValues"] = new PrivateMessageRouteValues { page = page, tab = tab };
 
             var model = new PrivateMessageListModel(list)
             {
                 Messages = inbox
-                // codehint: sm-delete
             };
 
             return PartialView(model);
@@ -192,13 +190,11 @@ namespace SmartStore.Web.Controllers
                 });
             }
 
-            // codehint: sm-edit
             ViewData["PagerRouteValues"] = new PrivateMessageRouteValues { page = page, tab = tab };
 
             var model = new PrivateMessageListModel(list)
             {
                 Messages = sentItems
-                // codehint: sm-delete
             };
 
             return PartialView(model);

@@ -18,33 +18,43 @@ using SmartStore.Services.Messages;
 using SmartStore.Tests;
 using NUnit.Framework;
 using Rhino.Mocks;
+using SmartStore.Core.Domain.Media;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Tests.ExportImport
 {
-	[TestFixture]
-	public class ExportManagerTests : ServiceTest
-	{
-		ICategoryService _categoryService;
-		IManufacturerService _manufacturerService;
-		IProductService _productService;
-		IPictureService _pictureService;
-		INewsLetterSubscriptionService _newsLetterSubscriptionService;
-		IExportManager _exportManager;
-		ILanguageService _languageService;
+    [TestFixture]
+    public class ExportManagerTests : ServiceTest
+    {
+        ICategoryService _categoryService;
+        IManufacturerService _manufacturerService;
+        IProductService _productService;
+		IProductTemplateService _productTemplateService;
+        IPictureService _pictureService;
+        INewsLetterSubscriptionService _newsLetterSubscriptionService;
+        IExportManager _exportManager;
+        ILanguageService _languageService;
+		MediaSettings _mediaSettings;
+		ICommonServices _commonServices;
+        IStoreMappingService _storeMapping;
 
-		[SetUp]
-		public new void SetUp()
-		{
-			_categoryService = MockRepository.GenerateMock<ICategoryService>();
-			_manufacturerService = MockRepository.GenerateMock<IManufacturerService>();
-			_productService = MockRepository.GenerateMock<IProductService>();
-			_pictureService = MockRepository.GenerateMock<IPictureService>();
-			_newsLetterSubscriptionService = MockRepository.GenerateMock<INewsLetterSubscriptionService>();
-			_languageService = MockRepository.GenerateMock<ILanguageService>();
+        [SetUp]
+        public new void SetUp()
+        {
+            _categoryService = MockRepository.GenerateMock<ICategoryService>();
+            _manufacturerService = MockRepository.GenerateMock<IManufacturerService>();
+            _productService = MockRepository.GenerateMock<IProductService>();
+			_productTemplateService = MockRepository.GenerateMock<IProductTemplateService>();
+            _pictureService = MockRepository.GenerateMock<IPictureService>();
+            _newsLetterSubscriptionService = MockRepository.GenerateMock<INewsLetterSubscriptionService>();
+            _languageService = MockRepository.GenerateMock<ILanguageService>();
+			_mediaSettings = MockRepository.GenerateMock<MediaSettings>();
+			_commonServices = MockRepository.GenerateMock<ICommonServices>();
+            _storeMapping = MockRepository.GenerateMock<IStoreMappingService>();
 
-			_exportManager = new ExportManager(_categoryService,
-				_manufacturerService, _productService, _pictureService, _newsLetterSubscriptionService, _languageService);
-		}
+            _exportManager = new ExportManager(_categoryService, _manufacturerService, _productService, _productTemplateService, _pictureService,
+                _newsLetterSubscriptionService, _languageService, _mediaSettings, _commonServices, _storeMapping);
+        }
 
 		//[Test]
 		//public void Can_export_manufacturers_to_xml()

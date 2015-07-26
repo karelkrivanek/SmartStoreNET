@@ -12,7 +12,7 @@ using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Admin.Models.Orders
 {
-    public class OrderModel : EntityModelBase
+    public class OrderModel : TabbableModel
     {
         public OrderModel()
         {
@@ -123,6 +123,8 @@ namespace SmartStore.Admin.Models.Orders
         [SmartResourceDisplayName("Admin.Orders.Fields.PaymentMethod")]
         public string PaymentMethod { get; set; }
 		public string PaymentMethodSystemName { get; set; }
+
+		public bool HasNewPaymentNotification { get; set; }
 
         //credit card info
         public bool AllowStoringCreditCardNumber { get; set; }

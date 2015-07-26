@@ -63,14 +63,12 @@ namespace SmartStore.Core.Infrastructure
             }
         }
 
-
 		public override IList<Assembly> GetAssemblies(bool ignoreInactivePlugins = false)
         {
             if (this.EnsureBinFolderAssembliesLoaded && !_binFolderAssembliesLoaded)
             {
                 _binFolderAssembliesLoaded = true;
                 string binPath = GetBinDirectory();
-                //binPath = _webHelper.MapPath("~/bin");
                 LoadMatchingAssemblies(binPath);
             }
 

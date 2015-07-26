@@ -9,6 +9,7 @@ namespace SmartStore.Core.Domain.Orders
 			MaximumShoppingCartItems = 1000;
 			MaximumWishlistItems = 1000;
 			MoveItemsFromWishlistToCart = true;
+			ShowItemsFromWishlistToCartButton = true;
 			ShowProductImagesOnShoppingCart = true;
 			ShowProductBundleImagesOnShoppingCart = true;
 			ShowProductImagesOnWishList = true;
@@ -25,7 +26,6 @@ namespace SmartStore.Core.Domain.Orders
             ShowBasePrice = true;
             ShowDeliveryTimes = true;
             ShowShortDesc = true;
-            
 		}
 		
 		/// <summary>
@@ -57,6 +57,11 @@ namespace SmartStore.Core.Domain.Orders
         /// Gets or sets a value indicating whether to move items from wishlist to cart when clicking "Add to cart" button. Otherwise, they are copied.
         /// </summary>
         public bool MoveItemsFromWishlistToCart { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to show the items from wishlist to ahopping cart button.
+		/// </summary>
+		public bool ShowItemsFromWishlistToCartButton { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to show product image on shopping cart page
@@ -127,7 +132,6 @@ namespace SmartStore.Core.Domain.Orders
         /// </summary>
         public bool RoundPricesDuringCalculation { get; set; }
 
-        // codehint: sm-add
         /// <summary>
         /// Gets or sets a value indicating whether to show a legal hint in the order summary
         /// </summary>

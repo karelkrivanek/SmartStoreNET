@@ -23,6 +23,7 @@
 					<span class="fa fa-caret-down"></span>
 				</a>
 				<ul class="dropdown-menu">
+					@Html.Widget("admin_menu_exportorders_top")
 					<li>
 						<a href="@Url.Action("ExportXmlAll")">
 							<i class="fa fa-fw fa-code"></i>
@@ -60,6 +61,7 @@
 							@T("Admin.Common.ExportToPdf.Selected")
 						</a>
 					</li>
+					@Html.Widget("admin_menu_exportorders_bottom")
 				</ul>
 			</div>
         </div>
@@ -190,8 +192,7 @@
                                 .HeaderHtmlAttributes(new { style = "text-align:center" });
 
                             columns.Bound(x => x.OrderNumber)
-								.Template(x => Html.ActionLink(x.OrderNumber, "Edit", new { id = x.Id }))
-								.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= OrderNumber #></a>");
+								.ClientTemplate(@Html.LabeledOrderNumber());
                             columns.Bound(x => x.OrderStatus);
                             columns.Bound(x => x.PaymentStatus);
                             columns.Bound(x => x.ShippingStatus);
@@ -219,6 +220,7 @@
                         })
                         .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
                         .DataBinding(dataBinding => dataBinding.Ajax().Select("OrderList", "Order"))
+						.PreserveGridState()
                         .EnableCustomBinding(true))
             </td>
         </tr>

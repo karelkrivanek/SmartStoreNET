@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Mime;
 using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Admin.Models.Orders;
@@ -206,6 +205,7 @@ namespace SmartStore.Admin.Controllers
             model.TaxDisplayType = _taxSettings.TaxDisplayType;
             model.AffiliateId = order.AffiliateId;
             model.CustomerComment = order.CustomerOrderComment;
+			model.HasNewPaymentNotification = order.HasNewPaymentNotification;
 
 			if (order.AffiliateId != 0)
 			{
@@ -818,7 +818,7 @@ namespace SmartStore.Admin.Controllers
                 Data = orders.Select(x =>
                 {
 					var store = _storeService.GetStoreById(x.StoreId);
-                    return new OrderModel()
+                    return new OrderModel
                     {
                         Id = x.Id,
                         OrderNumber = x.GetOrderNumber(),
@@ -828,7 +828,8 @@ namespace SmartStore.Admin.Controllers
                         PaymentStatus = x.PaymentStatus.GetLocalizedEnum(_localizationService, _workContext),
                         ShippingStatus = x.ShippingStatus.GetLocalizedEnum(_localizationService, _workContext),
                         CustomerEmail = x.BillingAddress.Email,
-                        CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc)
+                        CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc),
+						HasNewPaymentNotification = x.HasNewPaymentNotification
                     };
                 }),
                 Total = orders.TotalCount
@@ -1323,12 +1324,12 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("List");
         }
 
-        public ActionResult PdfInvoice(int orderId)
+        public ActionResult Print(int orderId, bool pdf = false)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
-			return RedirectToAction("Print", "Order", new { id = orderId, pdf = true, area = "" });
+            return RedirectToAction("Print", "Order", new { id = orderId, pdf = pdf, area = "" });
         }
 
         [HttpPost, ActionName("Edit")]
@@ -1760,7 +1761,7 @@ namespace SmartStore.Admin.Controllers
             var products = _productService.SearchProducts(searchContext);
             gridModel.Data = products.Select(x =>
             {
-                var productModel = new OrderModel.AddOrderProductModel.ProductModel()
+                var productModel = new OrderModel.AddOrderProductModel.ProductModel
                 {
                     Id = x.Id,
                     Name =  x.Name,
@@ -2429,12 +2430,11 @@ namespace SmartStore.Admin.Controllers
             if (order == null)
                 throw new ArgumentException("No order found with the specified id");
 
-            //order notes
             var orderNoteModels = new List<OrderModel.OrderNote>();
-            foreach (var orderNote in order.OrderNotes
-                .OrderByDescending(on => on.CreatedOnUtc))
+
+            foreach (var orderNote in order.OrderNotes.OrderByDescending(on => on.CreatedOnUtc))
             {
-                orderNoteModels.Add(new OrderModel.OrderNote()
+                orderNoteModels.Add(new OrderModel.OrderNote
                 {
                     Id = orderNote.Id,
                     OrderId = orderNote.OrderId,
@@ -2449,6 +2449,12 @@ namespace SmartStore.Admin.Controllers
                 Data = orderNoteModels,
                 Total = orderNoteModels.Count
             };
+
+			if (order.HasNewPaymentNotification)
+			{
+				order.HasNewPaymentNotification = false;
+				_orderService.UpdateOrder(order);
+			}
 
             return new JsonResult
             {
