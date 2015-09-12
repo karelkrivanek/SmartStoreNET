@@ -92,11 +92,11 @@
         }
 
         @*subcategories*@
-        @if (Model.SubCategories.Count > 0 && Model.SubCategoryDisplayType == SubCategoryDisplayType.AboveProductList)
+        @*@if (Model.SubCategories.Count > 0 && Model.SubCategoryDisplayType == SubCategoryDisplayType.AboveProductList)
         {    
             @Html.Widget("categorydetails_before_subcategories")
             @SubCategoryList()
-        }
+        }*@
         
         @*featured products*@
         @Html.Widget("categorydetails_before_featured_products")
