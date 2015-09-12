@@ -103,21 +103,21 @@
             <div class="form-inline clearfix" style="text-align:right;@(Model.IsAvailable ? "" : "display:none;")">
                 @if (!Model.AddToCart.DisableBuyButton)
                 {
-                    if (!Model.ProductPrice.CallForPrice) 
-                    {                         
+                    if (!Model.ProductPrice.CallForPrice)
+                    {
                         @Html.LabelFor(model => Model.AddToCart.EnteredQuantity, new { @class = "qty-label" })<text>:</text>
                         if (Model.AddToCart.AllowedQuantities.Count > 0)
                         {
-                        @Html.TextBoxFor(model => Model.AddToCart.EnteredQuantity, new
-                                                                               {
-                                                                                   @class = "qty-input",
-                                                                                   style = "width:25px",
-                                                                                   @Value = @Model.AddToCart.AllowedQuantities.First().Value
-                                                                               })
+                            @Html.TextBoxFor(model => Model.AddToCart.EnteredQuantity, new
+                               {
+                                   @class = "qty-input",
+                                   style = "width:25px",
+                                   @Value = @Model.AddToCart.AllowedQuantities.First().Value
+                               })
                         }
                         else
                         {
-                        @Html.TextBoxFor(model => Model.AddToCart.EnteredQuantity, new { @class = "qty-input", style = "width:25px" })
+                            @Html.TextBoxFor(model => Model.AddToCart.EnteredQuantity, new { @class = "qty-input", style = "width:25px" })
                         }
 
                         //if display measure unit

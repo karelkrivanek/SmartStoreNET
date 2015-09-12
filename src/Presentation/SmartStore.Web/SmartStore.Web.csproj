@@ -453,6 +453,7 @@
     <Content Include="App_Data\Localization\Installation\installation.en.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="App_Data\Migrations\update listopad.sql" />
     <Content Include="App_Data\Settings.txt" />
     <Content Include="Content\2012.2.607\Default\editor.png" />
     <Content Include="Content\2012.2.607\Default\imagebrowser.png" />
