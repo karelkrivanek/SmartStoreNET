@@ -16,6 +16,7 @@ namespace SmartStore.Core.Domain.Catalog
         {
             FileUploadAllowedExtensions = new List<string>();
 			AllowProductSorting = true;
+            DefaultSortOrder = ProductSortingEnum.Position;
 			AllowProductViewModeChanging = true;
 			DefaultViewMode = "grid";
 			CategoryBreadcrumbEnabled = true;
@@ -126,12 +127,17 @@ namespace SmartStore.Core.Domain.Catalog
         public bool AllowProductSorting { get; set; }
 
         /// <summary>
+        /// Gets or sets the default sort order in product lists
+        /// </summary>
+        public ProductSortingEnum DefaultSortOrder { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether customers are allowed to change product view mode
         /// </summary>
         public bool AllowProductViewModeChanging { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether customers are allowed to change product view mode
+        /// Gets or sets the default view mode for product lists
         /// </summary>
         public string DefaultViewMode { get; set; }
 
@@ -364,6 +370,11 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets the available customer selectable default page size options
         /// </summary>
         public string DefaultPageSizeOptions { get; set; }
+
+		/// <summary>
+		/// Gets or sets the price display type for prices in product lists
+		/// </summary>
+		public PriceDisplayType PriceDisplayType { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to include "Short description" in compare products
