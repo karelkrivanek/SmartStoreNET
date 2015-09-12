@@ -367,6 +367,15 @@
         }
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Ic)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.Ic)
+                @Html.ValidationMessageFor(model => model.Ic)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.Active)
             </td>
             <td class="adminData">

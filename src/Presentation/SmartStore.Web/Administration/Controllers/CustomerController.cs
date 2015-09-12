@@ -241,6 +241,7 @@ namespace SmartStore.Admin.Controllers
                 Active = customer.Active,
                 CreatedOn = _dateTimeHelper.ConvertToUserTime(customer.CreatedOnUtc, DateTimeKind.Utc),
                 LastActivityDate = _dateTimeHelper.ConvertToUserTime(customer.LastActivityDateUtc, DateTimeKind.Utc),
+                Ic = customer.GetAttribute<string>(SystemCustomerAttributeNames.Ic)
             };
         }
 
@@ -499,9 +500,11 @@ namespace SmartStore.Admin.Controllers
                     LastActivityDateUtc = DateTime.UtcNow,
                 };
                 _customerService.InsertCustomer(customer);
-                
+
                 //form fields
-				if (_dateTimeSettings.AllowCustomersToSetTimeZone)
+                _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Ic, model.Ic);
+
+                if (_dateTimeSettings.AllowCustomersToSetTimeZone)
 					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.TimeZoneId, model.TimeZoneId);
                 if (_customerSettings.GenderEnabled)
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Gender, model.Gender);
@@ -609,7 +612,9 @@ namespace SmartStore.Admin.Controllers
 			model.VatNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber);
 			model.VatNumberStatusNote = ((VatNumberStatus)customer.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId))
 				.GetLocalizedEnum(_localizationService, _workContext);
-			model.CreatedOn = _dateTimeHelper.ConvertToUserTime(customer.CreatedOnUtc, DateTimeKind.Utc);
+            model.Ic = customer.GetAttribute<string>(SystemCustomerAttributeNames.Ic);
+
+            model.CreatedOn = _dateTimeHelper.ConvertToUserTime(customer.CreatedOnUtc, DateTimeKind.Utc);
             model.LastActivityDate = _dateTimeHelper.ConvertToUserTime(customer.LastActivityDateUtc, DateTimeKind.Utc);
             model.LastIpAddress = customer.LastIpAddress;
             model.LastVisitedPage = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastVisitedPage);
@@ -775,7 +780,10 @@ namespace SmartStore.Admin.Controllers
 						}
                     }
 
-					_customerService.UpdateCustomer(customer);
+                    _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Ic, model.Ic);
+
+
+                    _customerService.UpdateCustomer(customer);
 
                     //form fields
 					if (_dateTimeSettings.AllowCustomersToSetTimeZone)

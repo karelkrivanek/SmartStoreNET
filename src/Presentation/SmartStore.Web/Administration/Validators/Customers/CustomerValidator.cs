@@ -24,6 +24,8 @@ namespace SmartStore.Admin.Validators.Customers
                 RuleFor(x => x.Phone).NotEmpty().WithMessage(localizationService.GetResource("Admin.Customers.Customers.Fields.Phone.Required"));
             if (customerSettings.FaxRequired && customerSettings.FaxEnabled)
                 RuleFor(x => x.Fax).NotEmpty().WithMessage(localizationService.GetResource("Admin.Customers.Customers.Fields.Fax.Required"));
+            RuleFor(x => x.Ic).Length(0, 20).WithMessage("IČ nemá správný formát!");
+
         }
     }
 }

@@ -131,6 +131,10 @@ namespace SmartStore.Web.Models.Customer
         public string VatNumberStatusNote { get; set; }
         public bool DisplayVatNumber { get; set; }
 
+        [SmartResourceDisplayName("Account.Fields.Ic")]
+        [AllowHtml]
+        public string Ic { get; set; }
+
         //external authentication
         [SmartResourceDisplayName("Account.AssociatedExternalAuth")]
         public IList<AssociatedExternalAuthModel> AssociatedExternalAuthRecords { get; set; }

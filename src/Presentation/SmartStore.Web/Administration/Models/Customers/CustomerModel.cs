@@ -140,6 +140,10 @@ namespace SmartStore.Admin.Models.Customers
 
         public bool DisplayVatNumber { get; set; }
 
+        [SmartResourceDisplayName("Admin.Customers.Customers.Fields.Ic")]
+        [AllowHtml]
+        public string Ic { get; set; }
+
         //registration date
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.CreatedOn")]
         public DateTime CreatedOn { get; set; }

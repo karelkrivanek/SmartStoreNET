@@ -220,6 +220,7 @@ namespace SmartStore.Web.Controllers
             if (!excludeProperties)
             {
 				model.VatNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber);
+                model.Ic = customer.GetAttribute<string>(SystemCustomerAttributeNames.Ic);
                 model.FirstName = customer.GetAttribute<string>(SystemCustomerAttributeNames.FirstName);
                 model.LastName = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastName);
                 model.Gender = customer.GetAttribute<string>(SystemCustomerAttributeNames.Gender);
@@ -587,6 +588,8 @@ namespace SmartStore.Web.Controllers
 						if (!String.IsNullOrEmpty(model.VatNumber) && _taxSettings.EuVatEmailAdminWhenNewVatSubmitted)
 							_workflowMessageService.SendNewVatSubmittedStoreOwnerNotification(customer, model.VatNumber, vatAddress, _localizationSettings.DefaultAdminLanguageId);
                     }
+
+                    _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Ic, model.Ic);
 
                     //form fields
                     if (_customerSettings.GenderEnabled)
@@ -1013,6 +1016,7 @@ namespace SmartStore.Web.Controllers
 								_workflowMessageService.SendNewVatSubmittedStoreOwnerNotification(customer, model.VatNumber, vatAddress, _localizationSettings.DefaultAdminLanguageId);
 						}
                     }
+                    _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Ic, model.Ic);
 
                     //form fields
                     if (_customerSettings.GenderEnabled)

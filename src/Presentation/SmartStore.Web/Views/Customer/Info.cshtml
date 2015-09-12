@@ -198,11 +198,18 @@
                         <div class="control-group">
                             @Html.LabelFor(model => model.VatNumber, new { @class = "control-label", @for = "VatNumber" })
                             <div class="controls">
-                                @Html.TextBoxFor(model => model.VatNumber, new { placeholder = "Volitelné" })&nbsp;&nbsp;&nbsp;@Model.VatNumberStatusNote
-                                <span class="help-block muted vat-note">@T("Account.Fields.VatNumber.Note")</span>
+                                @Html.TextBoxFor(model => model.VatNumber, new { placeholder = "Volitelné" })
                             </div>
                         </div>
                     }
+                    <div class="control-group">
+                        <label class="control-label">IČ</label>
+
+                        <div class="controls">
+                            @Html.EditorFor(model => model.Ic)
+                            @Html.ValidationMessageFor(model => model.Ic)
+                        </div>
+                    </div>
                 </fieldset>
                 }
 
