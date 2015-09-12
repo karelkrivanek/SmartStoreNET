@@ -143,14 +143,9 @@
                                 </div>
                             </div>
                         }
-                    <div class="control-group">
-                        <label class="control-label">IČ</label>
+                    @Html.ControlGroupFor(model => model.Ic, required: true)
 
-                        <div class="controls">
-                            @Html.TextBoxFor(model => model.Ic)
-                            @Html.ValidationMessageFor(model => model.Ic)
-                        </div>
-                    </div>
+
                 </fieldset>
             }
             @if (Model.StreetAddressEnabled || Model.StreetAddress2Enabled || Model.ZipPostalCodeEnabled

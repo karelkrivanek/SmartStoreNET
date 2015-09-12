@@ -19,7 +19,7 @@ namespace SmartStore.Web.Validators.Customer
             RuleFor(x => x.Password).Length(customerSettings.PasswordMinLength, 999).WithMessage(string.Format(localizationService.GetResource("Account.Fields.Password.LengthValidation"), customerSettings.PasswordMinLength));
             RuleFor(x => x.ConfirmPassword).NotEmpty().WithMessage(localizationService.GetResource("Account.Fields.ConfirmPassword.Required"));
             RuleFor(x => x.ConfirmPassword).Equal(x => x.Password).WithMessage(localizationService.GetResource("Account.Fields.Password.EnteredPasswordsDoNotMatch"));
-
+            RuleFor(x => x.Ic).NotEmpty().WithMessage(localizationService.GetResource("account.fields.ic.required"));
 
             //form fields
             if (customerSettings.CompanyRequired && customerSettings.CompanyEnabled)

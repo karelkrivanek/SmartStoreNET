@@ -129,7 +129,6 @@ namespace SmartStore.Web.Models.Customer
         public bool DisplayVatNumber { get; set; }
 
         [SmartResourceDisplayName("Account.Fields.Ic")]
-        [AllowHtml]
         public string Ic { get; set; }
         public bool DisplayCaptcha { get; set; }
     }
