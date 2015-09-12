@@ -31,16 +31,20 @@
                             <br />
                         }
 						
-						<span>@Html.Raw(Model.ProductPrice.NoteWithoutDiscount)</span>
+                        @if (String.IsNullOrWhiteSpace(Model.ProductPrice.PriceWithDiscount))
+                        {
+                            <span>@Html.Raw(Model.ProductPrice.NoteWithoutDiscount)</span>
 
-                    <span @if (String.IsNullOrWhiteSpace(Model.ProductPrice.PriceWithDiscount)) { <text> class="product-price current text-success" </text>    }>
-                            <span class="product-price-without-discount" itemprop="price">
-                            @if (!String.IsNullOrWhiteSpace(Model.ProductPrice.Price))
-                            {
-                                @Html.Raw(Model.ProductPrice.Price)
-                            }
+                            <span @if (String.IsNullOrWhiteSpace(Model.ProductPrice.PriceWithDiscount)) { <text> class="product-price current text-success" </text>    }>
+
+                                <span class="product-price-without-discount" itemprop="price">
+                                    @if (!String.IsNullOrWhiteSpace(Model.ProductPrice.Price))
+                                    {
+                                        @Html.Raw(Model.ProductPrice.Price)
+                                    }
+                                </span>
                             </span>
-                        </span>
+                        }
                     </div>
         
 					<div class="pull-left">
