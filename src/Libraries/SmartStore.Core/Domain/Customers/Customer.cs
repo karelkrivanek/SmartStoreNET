@@ -143,7 +143,13 @@ namespace SmartStore.Core.Domain.Customers
         /// </summary>
 		[DataMember]
 		public DateTime LastActivityDateUtc { get; set; }
-        
+
+        /// <summary>
+        /// Vlastni pole pro IC
+        /// </summary>
+        [DataMember]
+        public String Ic { get; set; }
+
         #region Navigation properties
 
         /// <summary>

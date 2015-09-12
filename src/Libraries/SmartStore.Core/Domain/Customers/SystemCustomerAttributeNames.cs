@@ -18,7 +18,8 @@ namespace SmartStore.Core.Domain.Customers
         public static string Phone { get { return "Phone"; } }
         public static string Fax { get { return "Fax"; } }
 		public static string VatNumber { get { return "VatNumber"; } }
-		public static string VatNumberStatusId { get { return "VatNumberStatusId"; } }
+        public static string Ic { get { return "Ic"; } }
+        public static string VatNumberStatusId { get { return "VatNumberStatusId"; } }
 		public static string TimeZoneId { get { return "TimeZoneId"; } }
         public static string CustomerNumber { get { return "CustomerNumber"; } }
 
