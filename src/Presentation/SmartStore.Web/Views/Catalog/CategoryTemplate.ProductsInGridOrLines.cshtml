@@ -181,7 +181,7 @@
     @Html.Widget("categorydetails_before_filters")
 
     @*filtering*@
-	@if (Model.Products.Count > 0 && Model.DisplayFilter)
+	@*@if (Model.Products.Count > 0 && Model.DisplayFilter)
     {
 		<div id="product-filter" class="block block-bordered product-filter-block">
 			<form class="filter-product-form" method="GET" action="@Url.Action("Products", "Filter")" data-multiselecturl="@Url.Action("ProductsMultiSelect", "Filter")">
@@ -216,5 +216,5 @@
 				productFilter.init('#product-filter', '#product-filter-modal');
 			});
 		</script>
-	}
+	}*@
 }
